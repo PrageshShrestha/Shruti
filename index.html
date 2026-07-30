@@ -943,6 +943,7 @@
       })
       .then(function (text) {
         text = text.trim();
+        console.log(text);
         // Auto-add https:// if missing
           if (!/^https?:\/\//.test(text)) {
           text = 'https://' + text;
