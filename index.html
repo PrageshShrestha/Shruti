@@ -938,26 +938,42 @@
   function loadApiUrl(announce) {
     return fetch(CONFIG_URL + '?t=' + Date.now(), { cache: 'no-store' })
       .then(function (res) {
-        if (!res.ok) { throw new Error('Config fetch failed (' + res.status + ')'); }
+        if (!res.ok) { 
+          throw new Error('Config fetch failed (' + res.status + ')'); 
+        }
         return res.text();
       })
       .then(function (text) {
         text = text.trim();
-        console.log(text);
+        console.log('Config content:', text);
+        
         // Auto-add https:// if missing
-          if (!/^https?:\/\//.test(text)) {
+        if (!/^https?:\/\//.test(text)) {
           text = 'https://' + text;
-          }
-          apiUrl = text.replace(/\/+$/, '');
-        if (announce) { flashServerStatus('ok', 'Connected: ' + apiUrl); }
+        }
+        
+        apiUrl = text.replace(/\/+$/, '');
+        console.log('API URL set to:', apiUrl);
+        
+        if (announce) { 
+          flashServerStatus('ok', 'Connected: ' + apiUrl); 
+        }
+        return apiUrl;
       })
       .catch(function (err) {
+        console.error('Config fetch error:', err);
         apiUrl = null;
-        if (announce) { flashServerStatus('err', 'Could not reach server address: ' + err.message); }
+        if (announce) { 
+          flashServerStatus('err', 'Could not reach server address: ' + err.message); 
+        }
+        throw err; // Re-throw so calling code knows it failed
       });
   }
 
-  loadApiUrl(false);
+  // Load the API URL on initialization
+  loadApiUrl(false).catch(function(err) {
+    console.warn('Initial config load failed, will retry on demand');
+  });
 
   var dropzone = document.getElementById('dropzone');
   var fileInput = document.getElementById('audio-input');
