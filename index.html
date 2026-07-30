@@ -1336,8 +1336,13 @@
       var formData = new FormData();
       formData.append('audio', selectedFile, selectedFile.name);
 
-      fetch(apiUrl + '/api/transcribe', { method: 'POST', body: formData })
-        .then(function (resp) {
+      fetch(apiUrl + '/api/transcribe', {
+  method: 'POST',
+  headers: {
+    'skip_zrok_interstitial': 'true'
+  },
+  body: formData
+}).then(function (resp) {
           return resp.json().then(function (data) {
             return { ok: resp.ok, data: data };
           });
