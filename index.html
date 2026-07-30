@@ -943,8 +943,11 @@
       })
       .then(function (text) {
         text = text.trim();
-        if (!/^https?:\/\//.test(text)) { throw new Error("Config file doesn't contain a valid URL"); }
-        apiUrl = text.replace(/\/+$/, '');
+        // Auto-add https:// if missing
+          if (!/^https?:\/\//.test(text)) {
+          text = 'https://' + text;
+          }
+          apiUrl = text.replace(/\/+$/, '');
         if (announce) { flashServerStatus('ok', 'Connected: ' + apiUrl); }
       })
       .catch(function (err) {
